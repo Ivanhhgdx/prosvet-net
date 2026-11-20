@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#f6f7f3" />
+    <meta
+      name="description"
+      content="Проверка доступности российских сервисов и контрольных сайтов с вашего устройства."
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-title" content="Просвет" />
+    <title>Просвет · Проверка сети</title>
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" href="./icon-192.png" />
+    <link rel="apple-touch-icon" href="./icon-180.png" />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <div class="shell bar">
+        <a class="brand" href="#overview" aria-label="Просвет, обзор сети"
+          ><span class="brand-mark" aria-hidden="true"
+            ><svg viewBox="0 0 40 40">
+              <path
+                d="M8 28V23a12 12 0 0 1 24 0v5M14 28v-5a6 6 0 0 1 12 0v5M20 28v-5"
+              /></svg></span
+          >Просвет</a
+        >
+        <nav id="nav" aria-label="Разделы">
+          <a data-view="overview" href="#overview"
+            ><i data-icon="overview"></i>Обзор</a
+          >
+          <a data-view="history" href="#history"
+            ><i data-icon="history"></i>История</a
+          >
+          <a data-view="method" href="#method"
+            ><i data-icon="help"></i>О методе</a
+          >
+        </nav>
+        <span class="top-date" id="top-date"></span>
+      </div>
+    </header>
+    <main class="shell">
+      <section id="overview" class="page">
+        <div class="page-title">
+          <h1>Обзор сети</h1>
+          <span class="date" id="date"></span>
+        </div>
+        <section class="hero" aria-labelledby="verdict" id="hero">
+          <img class="radar" src="./radar.png" alt="" />
+          <div class="hero-copy">
+            <div class="pill">
+              <span class="lamp"></span><span id="phase">Ожидание</span>
+            </div>
+            <h2 id="verdict">Белый список<br />сейчас включён?</h2>
+            <p id="summary">
+              Сравним доступ к сайтам из списка и за его пределами.
+            </p>
+            <div class="run-line">
+              <button class="primary" id="run">
+                <i data-icon="pulse"></i
+                ><span id="run-label">Проверить сеть</span></button
+              ><span id="duration">до 35 сек</span>
+            </div>
+          </div>
+        </section>
+        <div class="groups" aria-label="Доступность по группам">
+          <button class="metric white-group" data-filter="listed">
+            <span class="metric-head"
+              ><i data-icon="shield"></i><span>Белый список</span></span
+            ><span class="score"
+              ><strong id="listed-score">—</strong
+              ><small hidden> / 3</small></span
+            ><span class="metric-detail" id="listed-detail"
+              >Ещё не проверено</span
+            ><span class="meter" id="listed-meter"></span>
+          </button>
+          <button class="metric control-group" data-filter="control">
+            <span class="metric-head"
+              ><i data-icon="globe"></i><span>Обычные сайты</span></span
+            ><span class="score"
+              ><strong id="control-score">—</strong
+              ><small hidden> / 6</small></span
+            ><span class="metric-detail" id="control-detail"
+              >Ещё не проверено</span
+            ><span class="meter" id="control-meter"></span>
+          </button>
+        </div>
+        <section class="panel evidence" id="basis" hidden>
+          <h2>Почему такой вывод</h2>
+          <dl>
+            <div>
+              <dt>Сайты из белого списка</dt>
+              <dd id="basis-list"></dd>
+            </div>
+            <div>
+              <dt>Обычные российские</dt>
+              <dd id="basis-ru"></dd>
+            </div>
+            <div>
+              <dt>Обычные зарубежные</dt>
+              <dd id="basis-world"></dd>
+            </div>
+          </dl>
+          <p class="quiet" id="baseline" hidden></p>
+        </section>
+        <section class="panel quality" aria-labelledby="quality-title">
+          <div class="quality-head">
+            <span class="category"><i data-icon="wave"></i>Качество связи</span
+            ><span id="quality-round"></span>
+          </div>
+          <h2 id="quality-title">Нет замера</h2>
+          <p id="quality-text">
+            Проверка покажет задержки и пропущенные ответы.
+          </p>
+          <div class="quality-stats">
+            <div><span>Время ответа</span><strong id="q-ms">—</strong></div>
+            <div><span>Без ответа</span><strong id="q-miss">—</strong></div>
+            <div>
+              <span>По тайм-ауту</span><strong id="q-timeout">—</strong>
+            </div>
+          </div>
+          <details class="jam">
+            <summary>Есть ли глушилка?</summary>
+            <p>
+              По веб-проверке это установить невозможно. Радиопомехи, перегрузка
+              сети и слабое покрытие могут выглядеть одинаково. Здесь видны
+              только последствия для загрузки сайтов.
+            </p>
+          </details>
+        </section>
+        <section
+          class="panel services"
+          aria-labelledby="services-title"
+          id="services"
+        >
+          <div class="panel-head">
+            <h2 id="services-title">Сервисы</h2>
+            <div class="filters" aria-label="Фильтр сервисов">
+              <button data-filter="all" aria-pressed="true">Все</button
+              ><button data-filter="listed" aria-pressed="false">Список</button
+              ><button data-filter="control" aria-pressed="false">
+                Контроль
+              </button>
+            </div>
+          </div>
+          <div class="rows" id="rows"></div>
+        </section>
+        <p id="store-note" class="quiet" hidden></p>
+      </section>
+      <section id="history" class="page" hidden>
+        <div class="page-title"><h1>История</h1></div>
+        <div class="panel" id="history-body"></div>
+        <p class="quiet">Последние 30 проверок хранятся в этом браузере.</p>
+      </section>
+      <section id="method" class="page" hidden>
+        <div class="page-title"><h1>О методе</h1></div>
+        <div class="panel info">
+          <h2>Что показывает «Просвет»</h2>
+          <p>
+            При ограничениях мобильного интернета оператор может сохранить
+            доступ к части российских сервисов. «Просвет» сравнивает доступность
+            двух групп сайтов по вашему текущему соединению.
+          </p>
+          <details open>
+            <summary>Как проходит проверка</summary>
+            <p>
+              Телефон дважды загружает по одному небольшому изображению с девяти
+              сайтов. При неоднозначных ответах или подозрении на белый список
+              проводится третий замер. У каждого запроса новый адрес, обычно на
+              ответ даётся восемь секунд, при третьем замере — двенадцать. Для
+              медленной сети можно выбрать 20 секунд.
+            </p>
+            <p>
+              В белой группе — Банк России, Почта России и РИА Новости. Для
+              сравнения выбраны три российских проекта (HTML Academy,
+              Linux.org.ru, OpenNET) и три зарубежных (W3C, Python.org, GNU).
+              Они не названы в использованных публикациях Минцифры и МТС. Полный
+              состав разрешённых адресов конкретного оператора приложению
+              неизвестен.
+            </p>
+          </details>
+          <details>
+            <summary>Когда вероятен белый список</summary>
+            <p>
+              Вы подтвердили мобильную сеть без Wi-Fi и VPN. Как минимум два
+              одних и тех же сайта из перечня ответили во всех трёх замерах, а
+              ни один из шести обычных сайтов ни разу не ответил. Если тип сети
+              неизвестен, при такой картине показываем «Доступны только сайты из
+              списка».
+            </p>
+            <p>
+              Когда два контрольных сайта стабильно отвечают, доступ выходит за
+              пределы проверенной группы. Разрозненные ответы дают
+              неопределённый результат. При отсутствии всех ответов определить
+              режим нельзя.
+            </p>
+          </details>
+          <details>
+            <summary>Как читать качество связи</summary>
+            <p>
+              Время ответа — медиана длительности успешных загрузок, включая
+              установление соединения. «Без ответа» включает ошибки и тайм-ауты.
+              При медиане от двух секунд отмечаем задержки. Если один и тот же
+              сайт ответил только в части замеров, отмечаем нестабильность. Это
+              ориентиры для этой проверки, а не измерение скорости в Мбит/с или
+              радиосигнала.
+            </p>
+          </details>
+          <details>
+            <summary>Что может повлиять на вывод</summary>
+            <p>
+              Загрузка изображения подтверждает доступ к одному адресу. Сбой
+              сайта, слабая связь, DNS-фильтр, блокировщик контента или iCloud
+              Private Relay могут изменить результат. При сомнении повторите
+              проверку чуть позже.
+            </p>
+            <p>
+              Safari не сообщает режим оператора, номер базовой станции или
+              уровень радиосигнала в дБм. GPS и датчики движения не показывают,
+              какие сайты разрешил оператор. Приложение оценивает соединение в
+              момент проверки.
+            </p>
+          </details>
+          <details>
+            <summary>Как использовать без доступа к сайту</summary>
+            <p>
+              Заранее откройте приложение в Safari и добавьте его через
+              «Поделиться» → «На экран “Домой”». Один раз запустите его с иконки
+              при рабочем интернете и дождитесь готовности ниже. Тогда
+              сохранённый экран сможет открыться при ограничениях.
+            </p>
+            <p class="cache-status" id="cache-status">
+              Проверяем готовность к работе офлайн…
+            </p>
+          </details>
+          <details>
+            <summary>Какие данные используются</summary>
+            <p>
+              При запуске проверки телефон обращается напрямую к девяти сайтам.
+              Они получают обычный сетевой запрос и видят исходящий IP-адрес
+              соединения. История хранится на устройстве. Геолокация, микрофон и
+              камера приложению не нужны.
+            </p>
+          </details>
+          <details>
+            <summary>Источники</summary>
+            <div class="source-links">
+              <a
+                href="https://t.me/mintsifry/2713"
+                target="_blank"
+                rel="noreferrer"
+                >Минцифры · Почта России и РИА Новости</a
+              >
+              <a
+                href="https://t.me/mintsifry/2733"
+                target="_blank"
+                rel="noreferrer"
+                >Минцифры · Банк России</a
+              >
+              <a
+                href="https://media.mts.ru/internet/210833-belyj-spisok-interneta"
+                target="_blank"
+                rel="noreferrer"
+                >МТС · Сервисы при ограничениях</a
+              >
+              <a
+                href="https://developer.apple.com/forums/thread/721067"
+                target="_blank"
+                rel="noreferrer"
+                >Apple · Данные об уровне сигнала</a
+              >
+            </div>
+          </details>
+        </div>
+      </section>
+    </main>
+    <dialog id="sheet" aria-labelledby="sheet-title">
+      <div class="sheet-top">
+        <i class="sheet-icon" data-icon="antenna"></i
+        ><button class="close" id="close" aria-label="Закрыть">
+          <i data-icon="close"></i>
+        </button>
+      </div>
+      <h2 id="sheet-title">Как вы подключены?</h2>
+      <p>
+        Для проверки режима оператора выключите Wi-Fi и VPN. Safari не всегда
+        определяет тип сети.
+      </p>
+      <label class="slow-choice"
+        ><input id="slow" type="checkbox" /><span
+          >Медленная сеть<small>Ждать до 20 секунд на запрос</small></span
+        ></label
+      >
+      <button class="choice" data-connection="mobile">
+        <i data-icon="antenna"></i
+        ><span
+          ><b>Мобильный интернет</b><small>Wi-Fi и VPN выключены</small></span
+        >
+      </button>
+      <button class="choice" data-connection="other">
+        <i data-icon="globe"></i
+        ><span
+          ><b>Другое подключение</b
+          ><small>Wi-Fi, VPN или тип сети неизвестен</small></span
+        >
+      </button>
+    </dialog>
+    <div class="sr" aria-live="polite" role="status" id="announce"></div>
+    <noscript>Для проверки сети включите JavaScript в Safari.</noscript>
+  </body>
+</html>
